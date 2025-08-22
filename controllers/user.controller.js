@@ -108,14 +108,19 @@ const deleteAllUsers = catchAsync(async (req, res) => {
 const deleteUserById = catchAsync(async (req, res) => {
   const { userId } = req.params;
   const user = await User.findByIdAndDelete(userId);
+
   if (!user) {
     throw new ApiError(httpStatus.status.NOT_FOUND, 'Người dùng không tồn tại');
   }
+
+  // Lấy danh sách user còn lại sau khi xóa
+  const users = await User.find();
+
   res.status(httpStatus.status.OK).json({
     data: {
       code: httpStatus.status.OK,
       message: 'Xóa người dùng thành công',
-      user,
+      users, // trả về mảng users
     },
   });
 });
